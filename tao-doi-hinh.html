@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thiết kế Đội hình Bóng đá 11 người</title>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #1e88e5;
+            --secondary-color: #0d47a1;
+            --success-color: #43a047;
+            --danger-color: #e53935;
+            --light-color: #f5f5f5;
+            --dark-color: #212121;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f0f2f5;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .app-description {
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .formation-controls {
+            flex: 1;
+            min-width: 300px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .formation-selector {
+            margin-bottom: 20px;
+        }
+        
+        .formation-selector label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .formation-selector select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        .player-form {
+            background-color: var(--light-color);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c62828;
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #2e7d32;
+        }
+        
+        .player-list {
+            margin-top: 20px;
+        }
+        
+        .player-list h3 {
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .player-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: var(--light-color);
+            border-radius: 5px;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .player-info {
+            flex: 1;
+        }
+        
+        .player-name {
+            font-weight: 600;
+        }
+        
+        .player-details {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .football-field-container {
+            flex: 2;
+            min-width: 500px;
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .football-field {
+            width: 100%;
+            height: 100%;
+            min-height: 600px;
+            background-color: #2e7d32;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .field-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.7;
+        }
+        
+        .field-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .player-on-field {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: move;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: all 0.2s ease;
+            z-index: 10;
+            border: 2px solid #333;
+            user-select: none;
+            padding: 5px;
+            text-align: center;
+        }
+        
+        .player-on-field:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .player-on-field.dragging {
+            opacity: 0.8;
+            z-index: 100;
+        }
+        
+        .player-number {
+            font-weight: bold;
+            font-size: 1.1rem;
+            line-height: 1;
+        }
+        
+        .player-name-on-field {
+            font-size: 0.65rem;
+            font-weight: 600;
+            margin-top: 2px;
+            line-height: 1;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .player-position {
+            font-size: 0.6rem;
+            margin-top: 2px;
+            line-height: 1;
+            color: #666;
+        }
+        
+        .team-name {
+            text-align: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+        }
+        
+        .formation-preview {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            color: white;
+            font-weight: 600;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+        }
+        
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .actions .btn {
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        .drag-instruction {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .detected-formation {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #e3f2fd;
+            border-radius: 5px;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .detected-formation h4 {
+            margin-bottom: 5px;
+            color: var(--secondary-color);
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .football-field-container {
+                min-width: 100%;
+            }
+            
+            .football-field {
+                min-height: 500px;
+            }
+            
+            .player-on-field {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .player-name-on-field {
+                font-size: 0.6rem;
+            }
+            
+            .actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Thiết kế Đội hình Bóng đá</h1>
+            <p class="app-description">Tạo và tùy chỉnh đội hình bóng đá 11 người của bạn. Thêm cầu thủ, chỉnh sửa thông tin và sắp xếp vị trí trên sân.</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="formation-controls">
+                <div class="formation-selector">
+                    <label for="formation">Chọn đội hình:</label>
+                    <select id="formation">
+                        <option value="4-4-2">4-4-2 (Cổ điển)</option>
+                        <option value="4-3-3">4-3-3 (Tấn công)</option>
+                        <option value="4-2-3-1">4-2-3-1 (Hiện đại)</option>
+                        <option value="3-5-2">3-5-2 (Trung tâm)</option>
+                        <option value="5-3-2">5-3-2 (Phòng ngự)</option>
+                        <option value="custom">Tùy chỉnh</option>
+                    </select>
+                </div>
+                
+                <div class="detected-formation">
+                    <h4>Đội hình hiện tại:</h4>
+                    <div id="currentFormation">4-4-2</div>
+                </div>
+                
+                <div class="player-form">
+                    <h3>Thêm cầu thủ mới</h3>
+                    <div class="form-group">
+                        <label for="playerName">Tên cầu thủ:</label>
+                        <input type="text" id="playerName" placeholder="Nhập tên cầu thủ">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="playerNumber">Số áo:</label>
+                        <input type="number" id="playerNumber" min="1" max="99" placeholder="Số áo">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="playerPosition">Vị trí:</label>
+                        <select id="playerPosition">
+                            <option value="GK">Thủ môn (GK)</option>
+                            <option value="CB">Trung vệ (CB)</option>
+                            <option value="LB">Hậu vệ trái (LB)</option>
+                            <option value="RB">Hậu vệ phải (RB)</option>
+                            <option value="CDM">Tiền vệ phòng ngự (CDM)</option>
+                            <option value="CM">Tiền vệ trung tâm (CM)</option>
+                            <option value="LM">Tiền vệ trái (LM)</option>
+                            <option value="RM">Tiền vệ phải (RM)</option>
+                            <option value="CAM">Tiền vệ tấn công (CAM)</option>
+                            <option value="LW">Tiền đạo cánh trái (LW)</option>
+                            <option value="RW">Tiền đạo cánh phải (RW)</option>
+                            <option value="ST">Tiền đạo trung tâm (ST)</option>
+                        </select>
+                    </div>
+                    
+                    <button id="addPlayer" class="btn btn-primary">Thêm cầu thủ</button>
+                </div>
+                
+                <div class="player-list">
+                    <h3>Danh sách cầu thủ</h3>
+                    <div id="playersContainer">
+                        <!-- Danh sách cầu thủ sẽ được thêm vào đây bằng JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="actions">
+                    <button id="resetFormation" class="btn btn-danger">Đặt lại đội hình</button>
+                    <button id="saveFormation" class="btn btn-primary">Lưu đội hình</button>
+                    <button id="captureFormation" class="btn btn-success">Chụp ảnh đội hình</button>
+                </div>
+                
+                <div class="drag-instruction">
+                    <p>💡 <strong>Hướng dẫn:</strong> Kéo và thả các cầu thủ trên sân để thay đổi vị trí. Đội hình sẽ tự động được nhận diện!</p>
+                </div>
+            </div>
+            
+            <div class="football-field-container">
+                <div class="football-field" id="fieldToCapture">
+                    <!-- Hình ảnh sân bóng đá -->
+<img src="/Users/LENOVO/Pictures/Sanbong.png" alt="Sân bóng đá" class="field-image">                    
+                    <div class="team-name" id="teamName">Đội hình của bạn</div>
+                    
+                    <!-- Các cầu thủ sẽ được thêm vào đây bằng JavaScript -->
+                    <div id="fieldPlayers"></div>
+                    
+                    <div class="formation-preview" id="formationPreview">Đội hình: 4-4-2</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dữ liệu mẫu cho cầu thủ
+        let players = [
+            { id: 1, name: "Thủ môn", number: 1, position: "GK", x: 5, y: 50 },
+            { id: 2, name: "Hậu vệ phải", number: 2, position: "RB", x: 20, y: 20 },
+            { id: 3, name: "Trung vệ 1", number: 3, position: "CB", x: 20, y: 40 },
+            { id: 4, name: "Trung vệ 2", number: 4, position: "CB", x: 20, y: 60 },
+            { id: 5, name: "Hậu vệ trái", number: 5, position: "LB", x: 20, y: 80 },
+            { id: 6, name: "Tiền vệ phải", number: 6, position: "RM", x: 40, y: 20 },
+            { id: 7, name: "Tiền vệ trung tâm 1", number: 7, position: "CM", x: 40, y: 40 },
+            { id: 8, name: "Tiền vệ trung tâm 2", number: 8, position: "CM", x: 40, y: 60 },
+            { id: 9, name: "Tiền vệ trái", number: 9, position: "LM", x: 40, y: 80 },
+            { id: 10, name: "Tiền đạo 1", number: 10, position: "ST", x: 70, y: 40 },
+            { id: 11, name: "Tiền đạo 2", number: 11, position: "ST", x: 70, y: 60 }
+        ];
+
+        let nextPlayerId = 12;
+        let isDragging = false;
+        let dragPlayer = null;
+        let dragOffset = { x: 0, y: 0 };
+
+        // Các vị trí cho từng đội hình
+        const formations = {
+            "4-4-2": [
+                { position: "GK", x: 5, y: 50 },
+                { position: "RB", x: 20, y: 20 },
+                { position: "CB", x: 20, y: 40 },
+                { position: "CB", x: 20, y: 60 },
+                { position: "LB", x: 20, y: 80 },
+                { position: "RM", x: 40, y: 20 },
+                { position: "CM", x: 40, y: 40 },
+                { position: "CM", x: 40, y: 60 },
+                { position: "LM", x: 40, y: 80 },
+                { position: "ST", x: 70, y: 40 },
+                { position: "ST", x: 70, y: 60 }
+            ],
+            "4-3-3": [
+                { position: "GK", x: 5, y: 50 },
+                { position: "RB", x: 20, y: 20 },
+                { position: "CB", x: 20, y: 40 },
+                { position: "CB", x: 20, y: 60 },
+                { position: "LB", x: 20, y: 80 },
+                { position: "CM", x: 40, y: 30 },
+                { position: "CM", x: 40, y: 50 },
+                { position: "CM", x: 40, y: 70 },
+                { position: "RW", x: 70, y: 20 },
+                { position: "ST", x: 70, y: 50 },
+                { position: "LW", x: 70, y: 80 }
+            ],
+            "4-2-3-1": [
+                { position: "GK", x: 5, y: 50 },
+                { position: "RB", x: 20, y: 20 },
+                { position: "CB", x: 20, y: 40 },
+                { position: "CB", x: 20, y: 60 },
+                { position: "LB", x: 20, y: 80 },
+                { position: "CDM", x: 35, y: 40 },
+                { position: "CDM", x: 35, y: 60 },
+                { position: "RM", x: 50, y: 20 },
+                { position: "CAM", x: 50, y: 50 },
+                { position: "LM", x: 50, y: 80 },
+                { position: "ST", x: 70, y: 50 }
+            ],
+            "3-5-2": [
+                { position: "GK", x: 5, y: 50 },
+                { position: "CB", x: 20, y: 30 },
+                { position: "CB", x: 20, y: 50 },
+                { position: "CB", x: 20, y: 70 },
+                { position: "RM", x: 40, y: 20 },
+                { position: "CM", x: 40, y: 40 },
+                { position: "CM", x: 40, y: 50 },
+                { position: "CM", x: 40, y: 60 },
+                { position: "LM", x: 40, y: 80 },
+                { position: "ST", x: 70, y: 40 },
+                { position: "ST", x: 70, y: 60 }
+            ],
+            "5-3-2": [
+                { position: "GK", x: 5, y: 50 },
+                { position: "RB", x: 20, y: 20 },
+                { position: "CB", x: 20, y: 35 },
+                { position: "CB", x: 20, y: 50 },
+                { position: "CB", x: 20, y: 65 },
+                { position: "LB", x: 20, y: 80 },
+                { position: "CM", x: 45, y: 35 },
+                { position: "CM", x: 45, y: 50 },
+                { position: "CM", x: 45, y: 65 },
+                { position: "ST", x: 70, y: 40 },
+                { position: "ST", x: 70, y: 60 }
+            ]
+        };
+
+        // Hàm để hiển thị cầu thủ trên sân
+        function renderPlayersOnField() {
+            const fieldPlayers = document.getElementById('fieldPlayers');
+            fieldPlayers.innerHTML = '';
+            
+            players.forEach(player => {
+                const playerElement = document.createElement('div');
+                playerElement.className = 'player-on-field';
+                playerElement.style.left = `${player.x}%`;
+                playerElement.style.top = `${player.y}%`;
+                playerElement.setAttribute('data-id', player.id);
+                
+                // Rút gọn tên nếu quá dài
+                const displayName = player.name.length > 8 ? 
+                    player.name.substring(0, 7) + '...' : player.name;
+                
+                playerElement.innerHTML = `
+                    <div class="player-number">${player.number}</div>
+                    <div class="player-name-on-field">${displayName}</div>
+                    <div class="player-position">${getPositionName(player.position)}</div>
+                `;
+                
+                // Thêm sự kiện kéo thả
+                playerElement.addEventListener('mousedown', startDrag);
+                playerElement.addEventListener('touchstart', startDragTouch);
+                
+                fieldPlayers.appendChild(playerElement);
+            });
+            
+            // Tự động nhận diện đội hình sau khi render
+            detectFormation();
+        }
+
+        // Hàm để hiển thị danh sách cầu thủ
+        function renderPlayerList() {
+            const playersContainer = document.getElementById('playersContainer');
+            playersContainer.innerHTML = '';
+            
+            players.forEach(player => {
+                const playerItem = document.createElement('div');
+                playerItem.className = 'player-item';
+                
+                playerItem.innerHTML = `
+                    <div class="player-info">
+                        <div class="player-name">${player.name} (#${player.number})</div>
+                        <div class="player-details">Vị trí: ${getPositionName(player.position)}</div>
+                    </div>
+                    <div>
+                        <button class="btn btn-danger" onclick="removePlayer(${player.id})">Xóa</button>
+                    </div>
+                `;
+                
+                playersContainer.appendChild(playerItem);
+            });
+        }
+
+        // Hàm để lấy tên đầy đủ của vị trí
+        function getPositionName(positionCode) {
+            const positions = {
+                "GK": "TM",
+                "CB": "TV",
+                "LB": "HV Trái",
+                "RB": "HV Phải",
+                "CDM": "TVPN",
+                "CM": "TVTT",
+                "LM": "TV Trái",
+                "RM": "TV Phải",
+                "CAM": "TV Tấn công",
+                "LW": "TD Trái",
+                "RW": "TD Phải",
+                "ST": "TDTT"
+            };
+            
+            return positions[positionCode] || positionCode;
+        }
+
+        // Hàm để thêm cầu thủ mới
+        function addPlayer() {
+            const name = document.getElementById('playerName').value.trim();
+            const number = parseInt(document.getElementById('playerNumber').value);
+            const position = document.getElementById('playerPosition').value;
+            
+            if (!name || isNaN(number)) {
+                alert('Vui lòng nhập đầy đủ thông tin cầu thủ!');
+                return;
+            }
+            
+            // Kiểm tra xem số áo đã tồn tại chưa
+            if (players.some(player => player.number === number)) {
+                alert('Số áo này đã được sử dụng! Vui lòng chọn số áo khác.');
+                return;
+            }
+            
+            // Tìm vị trí mặc định cho cầu thủ dựa trên đội hình hiện tại
+            const formation = document.getElementById('formation').value;
+            const formationPositions = formations[formation];
+            const defaultPosition = formationPositions ? formationPositions.find(pos => pos.position === position) : null;
+            
+            const newPlayer = {
+                id: nextPlayerId++,
+                name,
+                number,
+                position,
+                x: defaultPosition ? defaultPosition.x : 50,
+                y: defaultPosition ? defaultPosition.y : 50
+            };
+            
+            players.push(newPlayer);
+            renderPlayersOnField();
+            renderPlayerList();
+            
+            // Reset form
+            document.getElementById('playerName').value = '';
+            document.getElementById('playerNumber').value = '';
+        }
+
+        // Hàm để xóa cầu thủ
+        function removePlayer(playerId) {
+            players = players.filter(player => player.id !== playerId);
+            renderPlayersOnField();
+            renderPlayerList();
+        }
+
+        // Hàm để thay đổi đội hình
+        function changeFormation() {
+            const formation = document.getElementById('formation').value;
+            
+            if (formation === 'custom') {
+                document.getElementById('formationPreview').textContent = `Đội hình: Tùy chỉnh`;
+                document.getElementById('currentFormation').textContent = "Tùy chỉnh";
+                return;
+            }
+            
+            document.getElementById('formationPreview').textContent = `Đội hình: ${formation}`;
+            document.getElementById('currentFormation').textContent = formation;
+            
+            // Cập nhật vị trí của các cầu thủ theo đội hình mới
+            const formationPositions = formations[formation];
+            
+            players.forEach(player => {
+                const newPosition = formationPositions.find(pos => pos.position === player.position);
+                if (newPosition) {
+                    player.x = newPosition.x;
+                    player.y = newPosition.y;
+                }
+            });
+            
+            renderPlayersOnField();
+        }
+
+        // Hàm để đặt lại đội hình
+        function resetFormation() {
+            if (confirm('Bạn có chắc muốn đặt lại toàn bộ đội hình? Tất cả cầu thủ sẽ bị xóa.')) {
+                players = [];
+                nextPlayerId = 1;
+                renderPlayersOnField();
+                renderPlayerList();
+            }
+        }
+
+        // Hàm để lưu đội hình
+        function saveFormation() {
+            const teamName = prompt('Nhập tên đội bóng:', 'Đội hình của tôi');
+            if (teamName) {
+                document.getElementById('teamName').textContent = teamName;
+                
+                // Trong ứng dụng thực tế, bạn có thể lưu dữ liệu vào localStorage hoặc gửi lên server
+                const formationData = {
+                    teamName,
+                    formation: document.getElementById('currentFormation').textContent,
+                    players
+                };
+                
+                localStorage.setItem('savedFormation', JSON.stringify(formationData));
+                alert('Đội hình đã được lưu!');
+            }
+        }
+
+        // Hàm để chụp ảnh đội hình
+        function captureFormation() {
+            const fieldElement = document.getElementById('fieldToCapture');
+            
+            html2canvas(fieldElement, {
+                scale: 2, // Tăng chất lượng ảnh
+                useCORS: true, // Cho phép sử dụng hình ảnh từ nguồn khác
+                logging: false // Tắt log để tăng hiệu suất
+            }).then(canvas => {
+                // Tạo link tải ảnh
+                const link = document.createElement('a');
+                link.download = 'doi-hinh-bong-da.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }).catch(err => {
+                console.error('Lỗi khi chụp ảnh:', err);
+                alert('Có lỗi xảy ra khi chụp ảnh đội hình. Vui lòng thử lại!');
+            });
+        }
+
+        // Hàm để tải đội hình đã lưu
+        function loadSavedFormation() {
+            const savedFormation = localStorage.getItem('savedFormation');
+            if (savedFormation) {
+                const formationData = JSON.parse(savedFormation);
+                document.getElementById('teamName').textContent = formationData.teamName;
+                document.getElementById('formation').value = "custom";
+                players = formationData.players;
+                nextPlayerId = Math.max(...players.map(p => p.id)) + 1;
+                
+                renderPlayersOnField();
+                renderPlayerList();
+                changeFormation();
+            }
+        }
+
+        // Hàm nhận diện đội hình dựa trên vị trí các cầu thủ
+        function detectFormation() {
+            if (players.length < 11) return;
+            
+            // Phân loại cầu thủ theo vị trí ngang (tọa độ x)
+            const defenders = players.filter(p => p.x < 30 && p.position !== 'GK');
+            const midfielders = players.filter(p => p.x >= 30 && p.x < 60 && p.position !== 'GK');
+            const forwards = players.filter(p => p.x >= 60 && p.position !== 'GK');
+            
+            // Đếm số lượng cầu thủ ở mỗi khu vực
+            const defCount = defenders.length;
+            const midCount = midfielders.length;
+            const fwdCount = forwards.length;
+            
+            // Xác định đội hình dựa trên số lượng
+            let detectedFormation = "Tùy chỉnh";
+            
+            if (defCount === 4 && midCount === 4 && fwdCount === 2) {
+                detectedFormation = "4-4-2";
+            } else if (defCount === 4 && midCount === 3 && fwdCount === 3) {
+                detectedFormation = "4-3-3";
+            } else if (defCount === 4 && midCount === 5 && fwdCount === 1) {
+                // Kiểm tra xem có 2 CDM không
+                const cdms = midfielders.filter(p => p.position === 'CDM');
+                if (cdms.length === 2) {
+                    detectedFormation = "4-2-3-1";
+                } else {
+                    detectedFormation = "4-5-1";
+                }
+            } else if (defCount === 3 && midCount === 5 && fwdCount === 2) {
+                detectedFormation = "3-5-2";
+            } else if (defCount === 5 && midCount === 3 && fwdCount === 2) {
+                detectedFormation = "5-3-2";
+            } else if (defCount === 4 && midCount === 1 && fwdCount === 4) {
+                detectedFormation = "4-1-4-1";
+            } else if (defCount === 4 && midCount === 1 && fwdCount === 5) {
+                // Kiểm tra xem có 4 tiền vệ và 1 tiền đạo không
+                const attackingMids = midfielders.filter(p => 
+                    p.position === 'CAM' || p.position === 'LM' || p.position === 'RM');
+                if (attackingMids.length === 3 && fwdCount === 2) {
+                    detectedFormation = "4-1-4-1";
+                } else {
+                    detectedFormation = "4-1-4-1";
+                }
+            } else if (defCount === 4 && midCount === 1 && fwdCount === 4) {
+                detectedFormation = "4-1-4-1";
+            }
+            
+            // Cập nhật hiển thị đội hình
+            document.getElementById('currentFormation').textContent = detectedFormation;
+            document.getElementById('formationPreview').textContent = `Đội hình: ${detectedFormation}`;
+            
+            // Nếu đội hình được nhận diện, cập nhật dropdown
+            if (detectedFormation !== "Tùy chỉnh") {
+                document.getElementById('formation').value = detectedFormation;
+            } else {
+                document.getElementById('formation').value = "custom";
+            }
+        }
+
+        // Các hàm cho tính năng kéo thả
+        function startDrag(e) {
+            e.preventDefault();
+            isDragging = true;
+            dragPlayer = e.target.closest('.player-on-field');
+            
+            if (!dragPlayer) return;
+            
+            const playerId = parseInt(dragPlayer.getAttribute('data-id'));
+            const player = players.find(p => p.id === playerId);
+            
+            const rect = dragPlayer.getBoundingClientRect();
+            dragOffset.x = e.clientX - rect.left;
+            dragOffset.y = e.clientY - rect.top;
+            
+            dragPlayer.classList.add('dragging');
+            
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', stopDrag);
+        }
+
+        function startDragTouch(e) {
+            e.preventDefault();
+            isDragging = true;
+            dragPlayer = e.target.closest('.player-on-field');
+            
+            if (!dragPlayer) return;
+            
+            const playerId = parseInt(dragPlayer.getAttribute('data-id'));
+            const player = players.find(p => p.id === playerId);
+            
+            const touch = e.touches[0];
+            const rect = dragPlayer.getBoundingClientRect();
+            dragOffset.x = touch.clientX - rect.left;
+            dragOffset.y = touch.clientY - rect.top;
+            
+            dragPlayer.classList.add('dragging');
+            
+            document.addEventListener('touchmove', dragTouch);
+            document.addEventListener('touchend', stopDrag);
+        }
+
+        function drag(e) {
+            if (!isDragging || !dragPlayer) return;
+            
+            const field = document.querySelector('.football-field');
+            const fieldRect = field.getBoundingClientRect();
+            
+            let x = ((e.clientX - fieldRect.left - dragOffset.x) / fieldRect.width) * 100;
+            let y = ((e.clientY - fieldRect.top - dragOffset.y) / fieldRect.height) * 100;
+            
+            // Giới hạn vị trí trong sân
+            x = Math.max(2, Math.min(98, x));
+            y = Math.max(2, Math.min(98, y));
+            
+            dragPlayer.style.left = `${x}%`;
+            dragPlayer.style.top = `${y}%`;
+            
+            // Cập nhật vị trí trong dữ liệu
+            const playerId = parseInt(dragPlayer.getAttribute('data-id'));
+            const player = players.find(p => p.id === playerId);
+            if (player) {
+                player.x = x;
+                player.y = y;
+            }
+            
+            // Nhận diện đội hình sau khi di chuyển
+            detectFormation();
+        }
+
+        function dragTouch(e) {
+            if (!isDragging || !dragPlayer) return;
+            
+            const field = document.querySelector('.football-field');
+            const fieldRect = field.getBoundingClientRect();
+            const touch = e.touches[0];
+            
+            let x = ((touch.clientX - fieldRect.left - dragOffset.x) / fieldRect.width) * 100;
+            let y = ((touch.clientY - fieldRect.top - dragOffset.y) / fieldRect.height) * 100;
+            
+            // Giới hạn vị trí trong sân
+            x = Math.max(2, Math.min(98, x));
+            y = Math.max(2, Math.min(98, y));
+            
+            dragPlayer.style.left = `${x}%`;
+            dragPlayer.style.top = `${y}%`;
+            
+            // Cập nhật vị trí trong dữ liệu
+            const playerId = parseInt(dragPlayer.getAttribute('data-id'));
+            const player = players.find(p => p.id === playerId);
+            if (player) {
+                player.x = x;
+                player.y = y;
+            }
+            
+            // Nhận diện đội hình sau khi di chuyển
+            detectFormation();
+        }
+
+        function stopDrag() {
+            isDragging = false;
+            if (dragPlayer) {
+                dragPlayer.classList.remove('dragging');
+                dragPlayer = null;
+            }
+            
+            document.removeEventListener('mousemove', drag);
+            document.removeEventListener('mouseup', stopDrag);
+            document.removeEventListener('touchmove', dragTouch);
+            document.removeEventListener('touchend', stopDrag);
+        }
+
+        // Khởi tạo ứng dụng
+        document.addEventListener('DOMContentLoaded', function() {
+            // Gán sự kiện
+            document.getElementById('addPlayer').addEventListener('click', addPlayer);
+            document.getElementById('formation').addEventListener('change', changeFormation);
+            document.getElementById('resetFormation').addEventListener('click', resetFormation);
+            document.getElementById('saveFormation').addEventListener('click', saveFormation);
+            document.getElementById('captureFormation').addEventListener('click', captureFormation);
+            
+            // Tải đội hình đã lưu (nếu có)
+            loadSavedFormation();
+            
+            // Hiển thị cầu thủ ban đầu
+            renderPlayersOnField();
+            renderPlayerList();
+        });
+    </script>
+</body>
+</html>
